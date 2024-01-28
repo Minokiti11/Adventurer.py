@@ -3,19 +3,20 @@ import numpy as np
 import keyboard
 import sys
 
-
 map_data_file = 'maps/map1/map.dat'
 item_data_file = 'maps/map1/item.dat'
 map_data = np.loadtxt(map_data_file, dtype=int)
 item_data = np.loadtxt(item_data_file, dtype=int)
 mob_data = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
-print(np.array(map_data))
+map_data = np.array(map_data)
 print("Swap x & y:")
-print(np.array(map_data).T)
-map_data = np.array(map_data).T
+print(map_data.T)
+map_data = map_data.T
 # mapdata[x, y]で取得できる
 
+# 5x5で探索するメソッド
+# 返り値はマップ情報、アイテム情報、モブ（プレイヤー、妨害キャラクターの座標）
 def search(point: np.array):
     x = point[0]
     y = point[1]
@@ -23,9 +24,9 @@ def search(point: np.array):
     item_5x5 = item_data[x-2:x+3, y-2:y+3]
     mob_5x5 = mob_data[x-2:x+3, y-2:y+3]
 
-    return map_5x5, item_5x5
+    return map_5x5, item_5x5, mob_data
 
-print (search([2,2]))
+print(search([2,2]))
 
 PLAYER1 = []
 PLAYER2 = []
