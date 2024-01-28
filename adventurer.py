@@ -4,9 +4,11 @@ import keyboard
 import sys
 
 
-mapdata_file = 'maps/map1/map.dat'
-itemdata_file = 'maps/map1/item.dat'
-map_data = np.loadtxt(mapdata_file, dtype=int)
+map_data_file = 'maps/map1/map.dat'
+item_data_file = 'maps/map1/item.dat'
+map_data = np.loadtxt(map_data_file, dtype=int)
+item_data = np.loadtxt(item_data_file, dtype=int)
+mob_data = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 print(np.array(map_data))
 print("Swap x & y:")
@@ -14,11 +16,14 @@ print(np.array(map_data).T)
 map_data = np.array(map_data).T
 # mapdata[x, y]で取得できる
 
-def search(p: np.array):
-    x = p[0]
-    y = p[1]
+def search(point: np.array):
+    x = point[0]
+    y = point[1]
     map_5x5 = map_data[x-2:x+3, y-2:y+3]
-    return map_5x5
+    item_5x5 = item_data[x-2:x+3, y-2:y+3]
+    mob_5x5 = mob_data[x-2:x+3, y-2:y+3]
+
+    return map_5x5, item_5x5
 
 print (search([2,2]))
 
@@ -132,7 +137,7 @@ if __name__ == '__main__':
         # 再描画
         pygame.display.update()
 
-        # エージェントの位置の更新
+        # プレイヤーの座標の更新
         to_x, to_y = update_agent_pos(PLAYER1[0], PLAYER1[1])
 
         PLAYER1 = [to_x, to_y]
