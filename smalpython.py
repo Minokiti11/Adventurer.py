@@ -13,7 +13,6 @@ print("Swap x & y:")
 print(np.array(map_data).T)
 map_data = np.array(map_data).T
 # mapdata[x, y]で取得できる
-print(map_data[7, 13])
 
 def search(p: np.array):
     x = p[0]
@@ -23,10 +22,14 @@ def search(p: np.array):
 
 print (search([2,2]))
 
+PLAYER1 = []
+PLAYER2 = []
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
 WIDTH, HEIGHT = 40, 40
 
@@ -43,15 +46,13 @@ ACTIONS = {
 
 # フレーム数
 clock = pygame.time.Clock()
-# フレームレートの上限設定
-fps_limit = 30
 
 def is_in_grid(x, y):
     """
         x, yがグリッドワールド内かの確認
     """
-    if len(grid) > y >= 0:
-        if len(grid[0]) > x  >= 0:
+    if len(map_data) > y >= 0:
+        if len(map_data[0]) > x  >= 0:
             return True
     return False
 
@@ -78,15 +79,19 @@ def draw_grid_world():
     """
         grid world自体の再描画
     """
-    for row in range(15):
-        for column in range(15):
+    for x in range(15):
+        for y in range(15):
             color = WHITE
-            if grid[row][column] == 1:
-                color = GREEN
+            if [x, y] == PLAYER1:
+                print("LOGGER:  PLAYER1_POSITION: ", [x, y])
+                color = RED
+            elif [x, y] == PLAYER2:
+                print("LOGGER:  PLAYER2_POSITION: ", [x, y])
+                color = BLUE
             pygame.draw.rect(screen,
                              color,
-                             [(MARGIN + WIDTH) * column + MARGIN,
-                              (MARGIN + HEIGHT) * row + MARGIN,
+                             [(MARGIN + WIDTH) * x + MARGIN,
+                              (MARGIN + HEIGHT) * y + MARGIN,
                               WIDTH,
                               HEIGHT])
 
@@ -95,27 +100,26 @@ if __name__ == '__main__':
     # pygameの初期化
     pygame.init()
 
-    # grid情報の初期化
-    grid = []
-    for row in range(15):
-        grid.append([])
-        for column in range(15):
-            grid[row].append(0)
-
     screen = pygame.display.set_mode(WINDOW_SIZE)
 
     pygame.display.set_caption("15x15 Grid")
 
     clock = pygame.time.Clock()
 
-    # エージェントの初期位置
-    x, y = 1, 5
-    grid[y][x] = 1
+    # プレイヤー1の初期位置
+    x1, y1 = np.random.randint(15), np.random.randint(15)
+    PLAYER1 = [x1, y1]
+
+    # プレイヤー2の初期位置
+    x2, y2 = np.random.randint(15), np.random.randint(15)
+    PLAYER2 = [x2, y2]
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+        
         if keyboard.is_pressed('escape'):
             pygame.quit()
             sys.exit()
@@ -129,11 +133,13 @@ if __name__ == '__main__':
         pygame.display.update()
 
         # エージェントの位置の更新
-        to_x, to_y = update_agent_pos(x, y)
+        to_x, to_y = update_agent_pos(PLAYER1[0], PLAYER1[1])
 
-        grid[y][x] = 0
-        grid[to_y][to_x] = 1
-        x, y = to_x, to_y
+        PLAYER1 = [to_x, to_y]
+
+        to_x, to_y = update_agent_pos(PLAYER2[0], PLAYER2[1])
+
+        PLAYER2 = [to_x, to_y]
 
         clock.tick(1)
 
